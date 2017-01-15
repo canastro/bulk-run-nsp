@@ -1,0 +1,42 @@
+{
+  "name": "bulk-run-nsp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "eslint": "eslint src/**/*.js",
+    "test": "npm run eslint && istanbul cover ./node_modules/.bin/_mocha tests",
+    "test:dev": "mocha tests --recursive --watch",
+    "codecov": "cat coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js"
+  },
+  "author": "Ricardo Canastro",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/canastro/bulk-run-nsp"
+  },
+  "bugs": {
+    "url": "https://github.com/canastro/bulk-run-nsp/issues"
+  },
+  "keywords": [
+    "nsp",
+    "bulk",
+    "run"
+  ],
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "codecov.io": "^0.1.6",
+    "eslint": "^3.13.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2",
+    "mock-require": "^2.0.1",
+    "require-uncached": "^1.0.3",
+    "sinon": "^1.17.3"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "cli-table": "^0.3.1",
+    "nsp": "^2.6.2",
+    "query-paths": "^1.0.0"
+  }
+}
