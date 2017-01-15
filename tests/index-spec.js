@@ -137,14 +137,14 @@ describe('index', function() {
             'path': ['test-project@0.0.1','angular2@2.0.0-alpha.37','traceur@0.0.87','glob@4.3.5','minimatch@2.0.10'],
             'advisory': 'https://nodesecurity.io/advisories/118'
         }];
-        var originalIsTTY;
+        var original;
 
         beforeEach(() => {
-            originalIsTTY = process.stdout.isTTY;
+            original = Object.assign({}, process.stdout);
         });
 
         afterEach(() => {
-            process.stdout.isTTY = originalIsTTY;
+            process.stdout = original;
         });
 
         context('when isTTY is false', () => {
@@ -179,6 +179,7 @@ describe('index', function() {
         context('when isTTY is true', () => {
             it('should still successfuly call console.log', (done) => {
                 process.stdout.isTTY = true;
+                sandbox.stub(process.stdout, 'getWindowSize').returns([100, 100]);
 
                 const exec = (command, args, cb) => {
                     cb('ERROR', null, JSON.stringify(errorReport));
