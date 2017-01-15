@@ -2,6 +2,7 @@
 
 const exec = require('child_process').exec;
 const path = require('path');
+const events = require('events');
 const chalk = require('chalk');
 const Table = require('cli-table');
 const queryPaths = require('query-paths');
@@ -13,7 +14,7 @@ const queryPaths = require('query-paths');
  * @param   {String} projectPath
  * @returns {Object}
  */
-const run = (nspBasePath, projectPath) => new Promise((resolve, reject) => {
+const run = (nspBasePath, projectPath) => new Promise((resolve) => {
     exec(`${nspBasePath} check --output json`, { cwd: projectPath }, (error, stdout, stderr) => {
         if (!error) {
             return resolve({ projectPath, isVulnerable: false });
@@ -27,7 +28,10 @@ const run = (nspBasePath, projectPath) => new Promise((resolve, reject) => {
                 result
             });
         } catch (e) {
-            return reject(e);
+            return resolve({
+                projectPath,
+                error: stderr
+            });
         }
     });
 });
@@ -52,6 +56,11 @@ const getWidth = () => {
  * @returns {String}
  */
 const output = (report) => {
+    if (report.error) {
+        const foundIn = chalk.red(`found in ${report.projectPath}`);
+        return `${chalk.red('(+) ')} ${report.error} ${foundIn}\n`;
+    }
+
     if (!report.isVulnerable) {
         return `${chalk.green('(+)')} No known vulnerabilities found in ${report.projectPath}\n`;
     }
@@ -83,17 +92,34 @@ module.exports = function bulkRunNsp (config) {
         throw new Error('BULK-RUN-NSP: invalid parameters');
     }
 
+    const promises = [];
     const nspBasePath = path.join(process.cwd(), 'node_modules', '.bin', 'nsp');
+    const eventEmitter = new events.EventEmitter();
 
-    return queryPaths(config.rootPath, 'package.json')
-        .then(projectPaths => Promise.all(
-            projectPaths.map((projectPath) => run(nspBasePath, projectPath))
-        ))
-        .then(reports => {
+    const qp = queryPaths(config.rootPath, 'package.json');
+
+    qp.on('data', (path) => {
+        const promise = run(nspBasePath, path).then((report) => {
             if (config.showLog) {
-                console.log(reports.map(report => output(report)).join('\n\n'));
+                console.log(output(report));
             }
 
-            return reports;
+            if (report.error) {
+                eventEmitter.emit('error', report.error);
+                return;
+            }
+
+            eventEmitter.emit('data', report);
         });
+
+        promises.push(promise);
+    });
+
+    qp.on('end', () => {
+        Promise.all(promises).then(() => {
+            eventEmitter.emit('end');
+        });
+    });
+
+    return eventEmitter;
 };

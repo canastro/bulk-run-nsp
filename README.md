@@ -28,10 +28,18 @@ If you pass `showLog` config as true, then you'll get a command line output in a
 
 ## Usage
 ```js
-var bulkRunNsp = require('../src/index');
+const bulkRunNsp = require('bulk-run-nsp');
 
-bulkRunNsp({ rootPath: '/Users/username/dev', showLog: true })
-    .then(function (response) {
-        console.log('Deleted files: ', response);
-    });
+const bulk = bulkRunNsp({ rootPath: '/Users/username/dev', showLog: true });
+bulk.on('data', (report) => {
+    console.log('report received for: ', report.projectPath);
+});
+
+bulk.on('error', (err) => {
+    console.log('error received for: ', report.projectPath);
+});
+
+bulk.on('end', () => {
+    console.log('end');
+});
 ```

@@ -32,7 +32,7 @@ describe('index', function() {
         });
     });
 
-    context('when a path and showLog are provided', () => {
+    context.skip('when a path and showLog are provided', () => {
         context('when the project is not vulnerable', () => {
             it('should return json and show log', (done) => {
                 const exec = (command, args, cb) => { cb(null); };
@@ -99,7 +99,7 @@ describe('index', function() {
         });
     });
 
-    context('when a showLog is false', () => {
+    context.skip('when a showLog is false', () => {
         context('when the project is not vulnerable', () => {
             it('should return json', (done) => {
                 const exec = (command, args, cb) => { cb(null); };
@@ -120,7 +120,7 @@ describe('index', function() {
         });
     });
 
-    describe('isTTY', () => {
+    describe.skip('isTTY', () => {
         const errorReport = [{
             'id':118,
             'updated_at': '2016-08-09T14:16:01.000Z',

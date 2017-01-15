@@ -1,6 +1,6 @@
 {
   "name": "bulk-run-nsp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Small library that will find all directories in a rootPath with a package.json file and will run nsp (Node Security Project) on it.",
   "main": "src/index.js",
   "scripts": {
@@ -37,6 +37,6 @@
     "chalk": "^1.1.3",
     "cli-table": "^0.3.1",
     "nsp": "^2.6.2",
-    "query-paths": "^1.0.0"
+    "query-paths": "^1.0.2"
   }
 }
