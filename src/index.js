@@ -105,7 +105,7 @@ module.exports = function bulkRunNsp (config) {
             }
 
             if (report.error) {
-                eventEmitter.emit('error', report.error);
+                eventEmitter.emit('error', report);
                 return;
             }
 

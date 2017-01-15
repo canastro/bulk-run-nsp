@@ -1,7 +1,7 @@
 const bulkRunNsp = require('../src/index');
 
 const config = {
-    rootPath: '/Users/ricardocanastro/dev',
+    rootPath: '/Users/ricardocanastro/dev/canastror',
     showLog: true
 };
 
@@ -13,10 +13,10 @@ bulk.on('data', (report) => {
     console.log('--------------');
 });
 
-bulk.on('error', (err) => {
+bulk.on('error', (report) => {
     console.log('--------------');
     console.log('when: ', new Date());
-    console.log('error: ', err);
+    console.log('error received: ', report.error, ' for: ', report.projectPath);
     console.log('--------------');
 });
 

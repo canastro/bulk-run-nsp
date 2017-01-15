@@ -35,8 +35,8 @@ bulk.on('data', (report) => {
     console.log('report received for: ', report.projectPath);
 });
 
-bulk.on('error', (err) => {
-    console.log('error received for: ', report.projectPath);
+bulk.on('error', (report) => {
+    console.log('error received: ', report.error, ' for: ', report.projectPath);
 });
 
 bulk.on('end', () => {

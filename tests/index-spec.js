@@ -32,7 +32,7 @@ describe('index', function() {
         });
     });
 
-    context.skip('when a path and showLog are provided', () => {
+    context('when a path and showLog are provided', () => {
         context('when the project is not vulnerable', () => {
             it('should return json and show log', (done) => {
                 const exec = (command, args, cb) => { cb(null); };
@@ -40,12 +40,16 @@ describe('index', function() {
 
                 mock('child_process', { exec });
 
-                mock('query-paths', () => Promise.resolve(['/dummy/folderA']));
+                mock('query-paths', () => ({
+                    on: (e, cb) =>  cb('/dummy/folderA')
+                }));
 
                 const bulkRunNsp = requireUncached('../src/index');
 
-                bulkRunNsp({ rootPath: '/dummy', showLog: true }).then((output) => {
-                    expect(output).to.deep.equal([ { projectPath: '/dummy/folderA', isVulnerable: false } ]);
+                const brn = bulkRunNsp({ rootPath: '/dummy', showLog: true });
+                brn.on('data', (output) => {
+                    console.log(output);
+                    expect(output).to.deep.equal({ projectPath: '/dummy/folderA', isVulnerable: false });
                     expect(console.log.called).to.equal(true);
                     done();
                 });
@@ -81,16 +85,19 @@ describe('index', function() {
 
                 mock('child_process', { exec });
 
-                mock('query-paths', () => Promise.resolve(['/dummy/folderA']));
+                mock('query-paths', () => ({
+                    on: (e, cb) =>  cb('/dummy/folderA')
+                }));
 
                 const bulkRunNsp = requireUncached('../src/index');
 
-                bulkRunNsp({ rootPath: '/dummy', showLog: true }).then((output) => {
-                    expect(output).to.deep.equal([{
+                const brn = bulkRunNsp({ rootPath: '/dummy', showLog: true });
+                brn.on('data', (output) => {
+                    expect(output).to.deep.equal({
                         projectPath: '/dummy/folderA',
                         isVulnerable: true,
                         result: errorReport
-                    }]);
+                    });
 
                     expect(console.log.calledOnce).to.equal(true);
                     done();
@@ -99,7 +106,7 @@ describe('index', function() {
         });
     });
 
-    context.skip('when a showLog is false', () => {
+    context('when a showLog is false', () => {
         context('when the project is not vulnerable', () => {
             it('should return json', (done) => {
                 const exec = (command, args, cb) => { cb(null); };
@@ -107,12 +114,15 @@ describe('index', function() {
 
                 mock('child_process', { exec });
 
-                mock('query-paths', () => Promise.resolve(['/dummy/folderA']));
+                mock('query-paths', () => ({
+                    on: (e, cb) =>  cb('/dummy/folderA')
+                }));
 
                 const bulkRunNsp = requireUncached('../src/index');
 
-                bulkRunNsp({ rootPath: '/dummy' }).then((output) => {
-                    expect(output).to.deep.equal([ { projectPath: '/dummy/folderA', isVulnerable: false } ]);
+                const brn = bulkRunNsp({ rootPath: '/dummy' });
+                brn.on('data', (output) => {
+                    expect(output).to.deep.equal({ projectPath: '/dummy/folderA', isVulnerable: false });
                     expect(console.log.called).to.equal(false);
                     done();
                 });
@@ -120,7 +130,38 @@ describe('index', function() {
         });
     });
 
-    describe.skip('isTTY', () => {
+    describe('on error', () => {
+        it('should return json', (done) => {
+            sandbox.stub(process.stdout, 'getWindowSize').returns([100, 100]);
+            const error = 'DUMMY-ERROR';
+            const exec = (command, args, cb) => {
+                cb('ERROR', null, error);
+            };
+
+            sandbox.spy(console, 'log');
+
+            mock('child_process', { exec });
+
+            mock('query-paths', () => ({
+                on: (e, cb) =>  cb('/dummy/folderA')
+            }));
+
+            const bulkRunNsp = requireUncached('../src/index');
+
+            const brn = bulkRunNsp({ rootPath: '/dummy', showLog: true });
+            brn.on('error', (output) => {
+                expect(output).to.deep.equal({
+                    projectPath: '/dummy/folderA',
+                    error
+                });
+
+                expect(console.log.calledOnce).to.equal(true);
+                done();
+            });
+        });
+    });
+
+    describe('isTTY', () => {
         const errorReport = [{
             'id':118,
             'updated_at': '2016-08-09T14:16:01.000Z',
@@ -160,16 +201,19 @@ describe('index', function() {
 
                 mock('child_process', { exec });
 
-                mock('query-paths', () => Promise.resolve(['/dummy/folderA']));
+                mock('query-paths', () => ({
+                    on: (e, cb) =>  cb('/dummy/folderA')
+                }));
 
                 const bulkRunNsp = requireUncached('../src/index');
 
-                bulkRunNsp({ rootPath: '/dummy', showLog: true }).then((output) => {
-                    expect(output).to.deep.equal([{
+                const brn = bulkRunNsp({ rootPath: '/dummy', showLog: true });
+                brn.on('data', (output) => {
+                    expect(output).to.deep.equal({
                         projectPath: '/dummy/folderA',
                         isVulnerable: true,
                         result: errorReport
-                    }]);
+                    });
 
                     expect(console.log.calledOnce).to.equal(true);
                     done();
@@ -190,16 +234,19 @@ describe('index', function() {
 
                 mock('child_process', { exec });
 
-                mock('query-paths', () => Promise.resolve(['/dummy/folderA']));
+                mock('query-paths', () => ({
+                    on: (e, cb) =>  cb('/dummy/folderA')
+                }));
 
                 const bulkRunNsp = requireUncached('../src/index');
 
-                bulkRunNsp({ rootPath: '/dummy', showLog: true }).then((output) => {
-                    expect(output).to.deep.equal([{
+                const brn = bulkRunNsp({ rootPath: '/dummy', showLog: true });
+                brn.on('data', (output) => {
+                    expect(output).to.deep.equal({
                         projectPath: '/dummy/folderA',
                         isVulnerable: true,
                         result: errorReport
-                    }]);
+                    });
 
                     expect(console.log.calledOnce).to.equal(true);
                     done();
