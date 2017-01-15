@@ -54,6 +54,7 @@ describe('index', function() {
 
         context('when project is vulnerable', () => {
             it('should return json', (done) => {
+                sandbox.stub(process.stdout, 'getWindowSize').returns([100, 100]);
                 const errorReport = [{
                     'id':118,
                     'updated_at': '2016-08-09T14:16:01.000Z',
