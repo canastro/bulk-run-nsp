@@ -6,5 +6,5 @@ const config = {
 };
 
 bulkRunNsp(config).then((files) => {
-    console.log('Projects scanned: ', JSON.stringify(files));
+    console.log('Projects scanned: ', files);
 });

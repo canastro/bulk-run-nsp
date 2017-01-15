@@ -24,11 +24,13 @@ This module uses [query-paths](https://github.com/canastro/query-paths) to recur
 ```
 Being the array results the output of the `json` formatter of nsp module.
 
+If you pass `showLog` config as true, then you'll get a command line output in a table like structure, just as the one default formatter from `nsp`.
+
 ## Usage
 ```js
 var bulkRunNsp = require('../src/index');
 
-bulkRunNsp('/Users/username/dev')
+bulkRunNsp({ rootPath: '/Users/username/dev', showLog: true })
     .then(function (response) {
         console.log('Deleted files: ', response);
     });
