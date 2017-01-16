@@ -8,7 +8,7 @@ Small library that will find all directories in a rootPath with a `package.json`
 ## Why?
 I had a lot of old projects that I didn't worked for a while and I was running out of free space on my disk. I ran a command that would delete all the `node_modules` folders in a given rootPath and I "instantly" gained 20GB of free disk.
 
-After that I thought I should have a better way to deal with this and started creating a electron application to manage my workspace, and created a few of core modules to support it, such as:
+After that I thought I should have a better way to deal with this and started creating a electron app to manage my workspace. I gathered some features I would like to have and started coding some core modules to later use in the electron app, such as:
 * [query-paths](https://github.com/canastro/query-paths)
 * [remove-git-ignored](https://github.com/canastro/remove-git-ignored)
 * [bulk-run-nsp](https://github.com/canastro/bulk-run-nsp)
