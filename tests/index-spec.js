@@ -35,10 +35,12 @@ describe('index', function() {
     context('when a path and showLog are provided', () => {
         context('when the project is not vulnerable', () => {
             it('should return json and show log', (done) => {
-                const exec = (command, args, cb) => { cb(null); };
                 sandbox.spy(console, 'log');
 
-                mock('child_process', { exec });
+                mock('nsp', {
+                    check: (options, cb) => { cb(null); },
+                    getFormatter: () => () => null
+                });
 
                 mock('query-paths', () => ({
                     on: (e, cb) =>  cb('/dummy/folderA')
@@ -77,13 +79,12 @@ describe('index', function() {
                     'advisory': 'https://nodesecurity.io/advisories/118'
                 }];
 
-                const exec = (command, args, cb) => {
-                    cb('ERROR', null, JSON.stringify(errorReport));
-                };
+                mock('nsp', {
+                    check: (options, cb) => { cb('ERROR', JSON.stringify(errorReport)); },
+                    getFormatter: () => () => JSON.stringify(errorReport)
+                });
 
                 sandbox.spy(console, 'log');
-
-                mock('child_process', { exec });
 
                 mock('query-paths', () => ({
                     on: (e, cb) =>  cb('/dummy/folderA')
@@ -109,10 +110,12 @@ describe('index', function() {
     context('when a showLog is false', () => {
         context('when the project is not vulnerable', () => {
             it('should return json', (done) => {
-                const exec = (command, args, cb) => { cb(null); };
                 sandbox.spy(console, 'log');
 
-                mock('child_process', { exec });
+                mock('nsp', {
+                    check: (options, cb) => { cb(null); },
+                    getFormatter: () => () => null
+                });
 
                 mock('query-paths', () => ({
                     on: (e, cb) =>  cb('/dummy/folderA')
@@ -134,13 +137,12 @@ describe('index', function() {
         it('should return json', (done) => {
             sandbox.stub(process.stdout, 'getWindowSize').returns([100, 100]);
             const error = 'DUMMY-ERROR';
-            const exec = (command, args, cb) => {
-                cb('ERROR', null, error);
-            };
+            mock('nsp', {
+                check: (options, cb) => { cb('ERROR', error); },
+                getFormatter: () => () => error
+            });
 
             sandbox.spy(console, 'log');
-
-            mock('child_process', { exec });
 
             mock('query-paths', () => ({
                 on: (e, cb) =>  cb('/dummy/folderA')
@@ -193,13 +195,12 @@ describe('index', function() {
             it('should still successfuly call console.log', (done) => {
                 process.stdout.isTTY = false;
 
-                const exec = (command, args, cb) => {
-                    cb('ERROR', null, JSON.stringify(errorReport));
-                };
+                mock('nsp', {
+                    check: (options, cb) => { cb('ERROR', JSON.stringify(errorReport)); },
+                    getFormatter: () => () => JSON.stringify(errorReport)
+                });
 
                 sandbox.spy(console, 'log');
-
-                mock('child_process', { exec });
 
                 mock('query-paths', () => ({
                     on: (e, cb) =>  cb('/dummy/folderA')
@@ -226,13 +227,12 @@ describe('index', function() {
                 process.stdout.isTTY = true;
                 sandbox.stub(process.stdout, 'getWindowSize').returns([100, 100]);
 
-                const exec = (command, args, cb) => {
-                    cb('ERROR', null, JSON.stringify(errorReport));
-                };
+                mock('nsp', {
+                    check: (options, cb) => { cb('ERROR', JSON.stringify(errorReport)); },
+                    getFormatter: () => () => JSON.stringify(errorReport)
+                });
 
                 sandbox.spy(console, 'log');
-
-                mock('child_process', { exec });
 
                 mock('query-paths', () => ({
                     on: (e, cb) =>  cb('/dummy/folderA')

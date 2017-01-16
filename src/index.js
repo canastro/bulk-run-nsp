@@ -1,27 +1,35 @@
 'use strict';
 
-const exec = require('child_process').exec;
 const path = require('path');
 const events = require('events');
 const chalk = require('chalk');
 const Table = require('cli-table');
 const queryPaths = require('query-paths');
+const nsp = require('nsp');
 
 /**
- * Run nsp for a given path
- * @method  run
- * @param   {String} nspBasePath - path where nsp executable can be found
- * @param   {String} projectPath
- * @returns {Object}
- */
+* Run nsp for a given path
+* @method  run
+* @param   {String} nspBasePath - path where nsp executable can be found
+* @param   {String} projectPath
+* @returns {Object}
+*/
 const run = (nspBasePath, projectPath) => new Promise((resolve) => {
-    exec(`${nspBasePath} check --output json`, { cwd: projectPath }, (error, stdout, stderr) => {
-        if (!error) {
-            return resolve({ projectPath, isVulnerable: false });
+    const formatter = nsp.getFormatter('json');
+    const pkgPath = path.join(projectPath, 'package.json');
+
+    nsp.check({ package: pkgPath }, (err, result) => {
+        const output = formatter(err, result, pkgPath);
+
+        if (!output) {
+            return resolve({
+                projectPath,
+                isVulnerable: false
+            });
         }
 
         try {
-            const result = JSON.parse(stderr);
+            const result = JSON.parse(output);
             return resolve({
                 projectPath,
                 isVulnerable: true,
@@ -30,17 +38,17 @@ const run = (nspBasePath, projectPath) => new Promise((resolve) => {
         } catch (e) {
             return resolve({
                 projectPath,
-                error: stderr
+                error: output
             });
         }
     });
 });
 
 /**
- * Get table width
- * @method  getWidth
- * @returns {Number} Table width
- */
+* Get table width
+* @method  getWidth
+* @returns {Number} Table width
+*/
 const getWidth = () => {
     if (process.stdout.isTTY) {
         return process.stdout.getWindowSize()[0] - 10;
@@ -50,11 +58,11 @@ const getWidth = () => {
 };
 
 /**
- * Builds a table like output, based from the default formatter in nsp project
- * @method  output
- * @param   {Object} report - report object built in `run` function
- * @returns {String}
- */
+* Builds a table like output, based from the default formatter in nsp project
+* @method  output
+* @param   {Object} report - report object built in `run` function
+* @returns {String}
+*/
 const output = (report) => {
     if (report.error) {
         const foundIn = chalk.red(`found in ${report.projectPath}`);
@@ -93,7 +101,7 @@ module.exports = function bulkRunNsp (config) {
     }
 
     const promises = [];
-    const nspBasePath = path.join(process.cwd(), 'node_modules', '.bin', 'nsp');
+    const nspBasePath = path.join('./node_modules', '.bin', 'nsp');
     const eventEmitter = new events.EventEmitter();
 
     const qp = queryPaths(config.rootPath, 'package.json');
