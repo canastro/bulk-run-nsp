@@ -27,6 +27,19 @@ Being the array results the output of the `json` formatter of nsp module.
 If you pass `showLog` config as true, then you'll get a command line output in a table like structure, just as the one default formatter from `nsp`.
 
 ## Usage
+
+### As cli
+```js
+> npm i -g bulk-run-nsp
+
+# Go to the desired root folder
+> bulk-nsp -s
+
+# You can output the log into a file
+> bulk-nsp -s > output.txt
+```
+
+### As a node module
 ```js
 const bulkRunNsp = require('bulk-run-nsp');
 
